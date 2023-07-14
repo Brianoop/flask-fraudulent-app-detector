@@ -1,5 +1,5 @@
 # Ignore the environment folder
 /environment/
-
+/_pycache_/
 # Ignore the .env file
 .env
