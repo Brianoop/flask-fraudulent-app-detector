@@ -1,0 +1,248 @@
+{% extends 'dashboard/main_layout.html' %} {% block title %} Manage Users {% endblock %}
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col md-12">
+      <div class="jumbotron p-3">
+        <h4>
+          Manage <b>Users </b>
+          <button
+            type="button"
+            class="btn btn-success float-right"
+            data-toggle="modal"
+            data-target="#mymodal"
+          >
+          <i class="fa fa-plus"></i>
+            Add New User
+          </button>
+        </h4>
+        <br />
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+          class="alert alert-{{ category }}  alert-dismissable"
+          role="alert"
+        >
+          {{ message|capitalize }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <table class="table table-hover table-dark">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          {% for row in pagination.items %}
+          <tbody>
+            <tr>
+              <td>{{row.id}}</td>
+              <td>{{row.name}}</td>
+              <td>{{row.email}}</td>
+              <td>{{row.role}}</td>
+              <td>
+                <a
+                  href="/update/{{row.id}}"
+                  class="btn btn-warning btn-xs"
+                  data-toggle="modal"
+                  data-target="#modaledit{{row.id}}"
+                  style="width: 5rem; height: 2.1rem; font-size: 0.7rem"
+                >
+                  <i class="fa fa-edit"></i>
+
+                  Edit</a>
+                <a
+                  href="/delete-user/{{row.id}}"
+                  class="btn btn-danger btn-xs"
+                  onclick="return confirm('Are you sure to DELETE this user?')"
+                style="width: 5rem; height: 2.1rem; font-size: 0.7rem"
+                  ><i class="fa fa-trash"></i> Delete</a
+                >
+              </td>
+            </tr>
+
+            <!-- Modal Edit User-->
+            <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Update Information</h4>
+                  </div>
+
+                  <div class="modal-body">
+                    <form action="{{url_for('routes.update_user')}}" method="POST">
+                      <div class="form-group">
+                        <label>Name:</label>
+                        <input type="hidden" name="id" value="{{row.id}}" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="name"
+                          value="{{row.name}}"
+                        />
+                      </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    required="1"
+                     value="{{row.email}}"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Role</label>
+                  <select class="form-control" name="role">
+                    <option value="user" {% if row.role == 'user' %} selected {% endif %}>Normal User</option>
+                    <option value="admin" {% if row.role == 'admin' %} selected {% endif %}>System Admin</option>
+                  </select>
+                </div>
+
+
+                      <div class="form-group">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                          Update
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div>
+            <ul class="pagination">
+              &nbsp;&nbsp; {% if pagination.has_prev %}
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.ManageUsers', page=pagination.prev_num) }}"
+                >
+                  {{ 'Previous' }}
+                </a>
+              </span>
+              &nbsp; {% endif %} {% for number in pagination.iter_pages() %} {%
+              if pagination.page != number %}
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.ManageUsers', page=number) }}"
+                >
+                  {{ number }}
+                </a>
+              </span>
+              &nbsp; {% else %}
+              <span class="current-page-number page-item active">
+                <a href="#" class="page-link">{{ number }}</a> </span
+              >&nbsp; {% endif %} {% endfor %} {% if pagination.has_next %}
+              <span class="page-item">
+                <a
+                  class="page-link"
+                  href="{{ url_for('routes.ManageUsers', page=pagination.next_num) }}"
+                >
+                  {{ 'Next' }}
+                </a>
+              </span>
+              {% endif %}
+            </ul>
+          </div>
+
+       
+      </div>
+
+      <!-- Modal Add User-->
+
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Add User</h4>
+            </div>
+            <div class="modal-body">
+              <form action="{{url_for('routes.insert_user')}}" method="POST">
+                <div class="form-group">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    required="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    required="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Role</label>
+                  <select name="role" class="form-control">
+                    <option value="user">Normal User</option>
+                    <option value="admin">System Admin</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    required="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">
+                    Add User
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

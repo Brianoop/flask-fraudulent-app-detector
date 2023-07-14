@@ -1,0 +1,277 @@
+{% extends 'dashboard/main_layout.html' %} {% block title %} See Apps {%
+endblock %} {% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col md-12">
+      <div class="jumbotron p-3">
+        <h4><b>Mobile Applications </b></h4>
+        <br />
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+          {{ message|capitalize }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <br />
+
+        <div class="row">
+          {% for row in pagination.items %}
+
+          <div class="col-md-6">
+            <div class="card bg-white p-3 m-2 w-100">
+              <div class="row">
+                <div class="col-xs-4 col-md-12">
+                  <img
+                    src="{{ url_for('static', filename=row.logo_path) }}"
+                    height="40"
+                    width="40"
+                    alt="Logo"
+                    style="border-radius: 5px"
+                  />
+                  &nbsp;&nbsp;
+                  <span style="font-size: 0.8rem">{{row.name}}</span>
+                </div>
+                <div class="col-xs-4 col-md-12 pt-4 pb-4">
+                  <p style="font-size: 0.7rem">{{row.description}}</p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-4 col-md-3">
+                  <a
+                    href="/app-detail?id={{row.id}}&page=1"
+                    class="btn btn-outline-secondary btn-xs"
+                    style="width: 5.1rem; height: 2rem; font-size: 0.7rem"
+                  >
+                    <i class="fa fa-eye text-sm"></i> Details</a
+                  >
+                </div>
+                <div class="col-xs-4 col-md-3">
+                  <a
+                    href="#"
+                    class="btn btn-outline-success btn-xs"
+                    data-toggle="modal"
+                    data-target="#modalreview{{row.id}}"
+                    style="width: 5.3rem; height: 2rem; font-size: 0.7rem"
+                  >
+                    <i class="fa fa-volume-up text-sm"></i>
+                    Review</a
+                  >
+                </div>
+
+                <div class="col-xs-4 col-md-3">
+                  <a
+                    href="#"
+                    class="btn btn-outline-info btn-xs"
+                    data-toggle="modal"
+                    data-target="#modalrating{{row.id}}"
+                    style="width: 5rem; height: 2rem; font-size: 0.7rem"
+                  >
+                    <i class="fa fa-star text-sm"></i> Rate</a
+                  >
+                </div>
+
+                <div class="col-md-3">
+                  <form action="insert-like" method="POST">
+                    <input type="hidden" name="id" value="{{row.id}}" />
+                    <input
+                      type="hidden"
+                      name="user_id"
+                      value="{{ session['user_id'] }}"
+                    />
+
+                    <button
+                      class="btn btn-outline-danger btn-xs"
+                      style="width: 4rem; height: 2rem; font-size: 0.7rem"
+                      type="submit"
+                    >
+                      <i class="fa fa-heart"></i> Like
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Modal Add App Review User-->
+              <div id="modalreview{{row.id}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">
+                        Give your review about {{row.name}}
+                      </h4>
+                    </div>
+
+                    <div class="modal-body">
+                      <form
+                        action="{{url_for('routes.insert_mobile_application_review')}}"
+                        method="POST"
+                      >
+                        <input type="hidden" name="id" value="{{row.id}}" />
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="{{ session['user_id']}}"
+                        />
+
+                        <div class="form-group">
+                          <label>Your honest review</label>
+
+                          <textarea
+                            class="form-control"
+                            name="review"
+                            rows="5"
+                            required
+                          ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                          <button class="btn btn-primary btn-sm" type="submit">
+                            Send Review
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Rate App-->
+              <div id="modalrating{{row.id}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Rate {{row.name}} out of 5</h4>
+                    </div>
+
+                    <div class="modal-body">
+                      <form
+                        action="{{url_for('routes.insert_mobile_application_rating')}}"
+                        method="POST"
+                      >
+                        <input type="hidden" name="id" value="{{row.id}}" />
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="{{ session['user_id']}}"
+                        />
+
+                        <input
+                          type="hidden"
+                          name="rating_out_of_five"
+                          id="appRating"
+                          value="1"
+                        />
+
+                        <div class="rating">
+                          <label>
+                            <input type="radio" name="stars" value="1" />
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="2" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="3" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="4" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="5" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <button class="btn btn-primary btn-sm" type="submit">
+                            Save Rating
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+          <div>
+            <ul class="pagination">
+              &nbsp;&nbsp; {% if pagination.has_prev %}
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.SeeApps', page=pagination.prev_num) }}"
+                >
+                  {{ 'Previous' }}
+                </a>
+              </span>
+              &nbsp; {% endif %} {% for number in pagination.iter_pages() %} {%
+              if pagination.page != number %}
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.SeeApps', page=number) }}"
+                >
+                  {{ number }}
+                </a>
+              </span>
+              &nbsp; {% else %}
+              <span class="current-page-number page-item active">
+                <a href="#" class="page-link">{{ number }}</a> </span
+              >&nbsp; {% endif %} {% endfor %} {% if pagination.has_next %}
+              <span class="page-item">
+                <a
+                  class="page-link"
+                  href="{{ url_for('routes.SeeApps', page=pagination.next_num) }}"
+                >
+                  {{ 'Next' }}
+                </a>
+              </span>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endblock %}
+  </div>
+</div>

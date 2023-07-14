@@ -1,0 +1,298 @@
+{% extends 'dashboard/main_layout.html' %} {% block title %} Detail {% endblock %}
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col md-12">
+      <div class="jumbotron p-3">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+          class="alert alert-{{ category }} alert-dismissable"
+          role="alert"
+        >
+          {{ message|capitalize }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <br />
+        <!--Beginning of App Detail Content -->
+        <div class="container">
+            <a
+                    href="/see-apps"
+                    class="btn btn-secondary btn-xs mb-2"
+                    style="width: 5rem; height: 2rem; font-size: 0.7rem"
+                  >
+                    Back</a
+                  >
+                
+          <h6> App Detail</h6>
+           <div class="card bg-white p-3 w-100">
+              <div class="row">
+                <div class="col-xs-4 col-md-12">
+                  <img
+                    src="{{ url_for('static', filename=mobile_app.logo_path) }}"
+                    height="40"
+                    width="40"
+                    alt="Logo"
+                    style="border-radius: 5px"
+                  />
+                  &nbsp;&nbsp;
+                  <span style="font-size: 0.8rem">{{mobile_app.name}}</span>
+                  
+                </div>
+                <div class="col-xs-4 col-md-12 pt-4 pb-4">
+                  <p style="font-size: 0.8rem">{{mobile_app.description}}</p>
+                  <span style="font-size: .8rem;"><i class="fa fa-star text-warning text-sm"></i> {{ average_rating }} rating</span> <br>
+                  <span style="font-size: .8rem;"><i class="fa fa-thumbs-up text-warning text-sm"></i> {{ total_likes }} like(s)</span> <br>
+                  <strong>Review Summary:</strong> <br>
+                  <span style="font-size: .8rem;">😒 {{ total_negative_reviews }} - negative (s)</span> <br>
+                  <span style="font-size: .8rem;">❤️ {{ total_positive_reviews }} - positive (s)</span> <br>
+                  <span style="font-size: .8rem;">👍 {{ total_neutral_reviews }} - neutral (s)</span> <br>
+                  <strong>Overall Summary:</strong> <br>
+                  <p style="font-size: 0.8rem" {% if safe %} class="text-success" {% else %} class="text-danger text-bold" {% endif %}>{{ general_app_review }}</p>
+                </div>
+              </div>
+
+              <div class="row">
+                
+                <div class="col-xs-4 col-md-3 mb-1">
+                  <a
+                    href="#"
+                    class="btn btn-outline-success btn-xs"
+                    data-toggle="modal"
+                    data-target="#modalreview{{mobile_app.id}}"
+                    style="width: 5.3rem; height: 2rem; font-size: 0.7rem"
+                  >
+                  <i class="fa fa-volume-up text-sm"></i> Review</a
+                  >
+                </div>
+
+                <div class="col-xs-4 col-md-3 mb-1">
+                  <a
+                    href="#"
+                    class="btn btn-outline-info btn-xs"
+                    data-toggle="modal"
+                    data-target="#modalrating{{mobile_app.id}}"
+                    style="width: 5rem; height: 2rem; font-size: 0.7rem"
+                  >
+                <i class="fa fa-star text-sm"></i>    Rate</a
+                  >
+                </div>
+
+                <div class="col-md-3 mb-1">
+                  <form action="{{url_for('routes.insert_mobile_application_like')}}" method="POST">
+                    <input type="hidden" name="id" value="{{mobile_app.id}}" />
+                    <input
+                      type="hidden"
+                      name="user_id"
+                      value="{{ session['user_id'] }}"
+                    />
+
+                    <button
+                      class="btn btn-outline-danger btn-xs"
+                      style="width: 4rem; height: 2rem; font-size: 0.7rem"
+                      type="submit"
+                    >
+                      <i class="fa fa-heart"></i> Like
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Modal Add App Review User-->
+              <div id="modalreview{{mobile_app.id}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">
+                        Give your review about {{mobile_app.name}}
+                      </h4>
+                    </div>
+
+                    <div class="modal-body">
+                      <form
+                        action="{{url_for('routes.insert_mobile_application_review')}}"
+                        method="POST"
+                      >
+                        <input type="hidden" name="id" value="{{mobile_app.id}}" />
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="{{ session['user_id']}}"
+                        />
+
+                        <div class="form-group">
+                          <label>Your honest review</label>
+
+                          <textarea
+                            class="form-control"
+                            name="review"
+                            rows="5"
+                            required
+                          ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                          <button class="btn btn-primary btn-sm" type="submit">
+                            Send Review
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Rate App-->
+              <div id="modalrating{{mobile_app.id}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Rate {{mobile_app.name}} out of 5</h4>
+                    </div>
+
+                    <div class="modal-body">
+                      <form
+                        action="{{url_for('routes.insert_mobile_application_rating')}}"
+                        method="POST"
+                      >
+                        <input type="hidden" name="id" value="{{mobile_app.id}}" />
+                        <input
+                          type="hidden"
+                          name="user_id"
+                          value="{{ session['user_id']}}"
+                        />
+
+                        <input
+                          type="hidden"
+                          name="rating_out_of_five"
+                          id="appRating"
+                          value="1"
+                        />
+
+                        <div class="rating">
+                          <label>
+                            <input type="radio" name="stars" value="1" />
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="2" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="3" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="4" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                          <label>
+                            <input type="radio" name="stars" value="5" />
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                            <span class="icon">★</span>
+                          </label>
+                        </div>
+
+                        <div class="form-group mt-2">
+                          <button class="btn btn-primary btn-sm" type="submit">
+                            Save Rating
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+         </div>
+
+          <div class="card bg-dark p-3 ml-3 mr-3 mt-4">
+            <h4 class="text-light">Reviews</h4> <br>
+            {% for user, review in pagination.items %}
+                <div class="alert alert-info mb-3">
+                    <strong>{{ user.name }}</strong>
+                    <p style="font-size: .8rem;">{{ review.text }}</p>
+                    <label  style="font-size: .8rem;"><strong>Sentiment:</strong> {{ review.sentiment }}</label>
+                </div>
+             {% endfor %}
+          </div>
+          <div class="pagination mt-4 ml-3">
+              {% if pagination.has_prev %}
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href='{{ url_for("routes.show_app_detail", id=mobile_app.id, page=pagination.prev_num) }}'
+                >
+                  {{ 'Previous' }}
+                </a>
+              </span>
+              &nbsp;&nbsp;
+              {% endif %} {% for number in pagination.iter_pages() %} {% if
+              pagination.page != number %}
+              &nbsp;
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.show_app_detail',id=mobile_app.id, page=number) }}"
+                >
+                  {{ number }}
+                </a>
+              </span>
+              &nbsp;
+              
+              {% else %}
+              <span class="current-page-number page-item active">
+                <a  class="page-link">{{ number }}</a>
+              </span>
+              {% endif %} {% endfor %} {% if pagination.has_next %}
+              &nbsp;&nbsp;
+              <span class="page-item">
+                <a
+                  class="page-number page-link"
+                  href="{{ url_for('routes.show_app_detail', id=mobile_app.id, page=pagination.next_num) }}"
+                >
+                  {{ 'Next' }}
+                </a>
+              </span>
+              {% endif %}
+            </div>
+            <!-- End of App Detail Content -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endblock %}
+  </div>
+</div>

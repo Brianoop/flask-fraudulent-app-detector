@@ -1,0 +1,41 @@
+{% extends 'dashboard/main_layout.html' %} {% block title %} Home {% endblock %}
+{% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col md-12">
+      <div class="jumbotron p-3">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+          class="alert {{ category }} text-light alert-dismissable"
+          role="alert"
+        >
+          {{ message|capitalize }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Total Apps</strong> <br />
+            {{ total_apps }}
+          </div>
+          <div class="col-md-3">
+            <strong>Total Users</strong> <br />
+            {{ total_users }}
+          </div>
+          <div class="col-md-3">
+            <strong>Total Reviews</strong> <br />
+            {{ total_reviews }}
+          </div>
+          <div class="col-md-3">
+            <strong>Total Ratings</strong> <br />
+            {{ total_ratings }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

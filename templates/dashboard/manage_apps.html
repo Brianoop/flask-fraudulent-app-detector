@@ -1,0 +1,236 @@
+{% extends 'dashboard/main_layout.html' %} {% block title %} Manage Apps {%
+endblock %} {% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col md-12">
+      <div class="jumbotron p-3">
+        <h4>
+          Manage <b>Mobile Applications </b>
+          <button
+            type="button"
+            class="btn btn-success float-right"
+            data-toggle="modal"
+            data-target="#mymodal"
+          >
+            <i class="fa fa-plus"></i> Add New Mobile Application
+          </button>
+        </h4>
+        <br />
+
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissable" role="alert">
+          {{ message|capitalize }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <table class="table table-hover table-dark">
+          <thead>
+            <tr>
+              <th>Logo</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          {% for row in pagination.items %}
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="{{ url_for('static', filename=row.logo_path) }}"
+                  height="40"
+                  width="40"
+                  alt="Logo"
+                  style="border-radius: 5px"
+                />
+              </td>
+              <td>{{row.name}}</td>
+              <td>{{row.description}}</td>
+              <td>
+                <a
+                  href="/update/{{row.id}}"
+                  class="btn btn-warning btn-xs"
+                  data-toggle="modal"
+                  data-target="#modaledit{{row.id}}"
+                  style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
+                >
+                  <i class="fa fa-edit"></i>
+
+                  Edit</a
+                >
+                <a
+                  href="/delete/{{row.id}}"
+                  class="btn btn-danger btn-xs"
+                  onclick="return confirm('Are you sure to delete this app?')"
+                  style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
+                  ><i class="fa fa-trash"></i> Delete</a
+                >
+              </td>
+            </tr>
+
+            <!-- Modal Edit app-->
+            <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Update Information</h4>
+                  </div>
+
+                  <div class="modal-body">
+                    <form action="{{url_for('routes.update')}}" method="POST">
+                      <div class="form-group">
+                        <label>Name:</label>
+                        <input type="hidden" name="id" value="{{row.id}}" />
+                        <input
+                          type="text"
+                          class="form-control"
+                          name="name"
+                          value="{{row.name}}"
+                        />
+                      </div>
+
+                      <div class="form-group">
+                        <label>Description:</label>
+
+                        <textarea
+                          class="form-control"
+                          name="description"
+                          rows="5"
+                        >
+{{row.description}}</textarea
+                        >
+                      </div>
+
+                      <div class="form-group">
+                        <button class="btn btn-primary btn-sm" type="submit">
+                          Update
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-sm"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <div>
+          <ul class="pagination">
+            &nbsp;&nbsp; {% if pagination.has_prev %}
+            <span class="page-item">
+              <a
+                class="page-number page-link"
+                href="{{ url_for('routes.ManageApps', page=pagination.prev_num) }}"
+              >
+                {{ 'Previous' }}
+              </a>
+            </span>
+            &nbsp; {% endif %} {% for number in pagination.iter_pages() %} {% if
+            pagination.page != number %}
+            <span class="page-item">
+              <a
+                class="page-number page-link"
+                href="{{ url_for('routes.ManageApps', page=number) }}"
+              >
+                {{ number }}
+              </a>
+            </span>
+            &nbsp; {% else %}
+            <span class="current-page-number page-item active">
+              <a href="#" class="page-link">{{ number }}</a> </span
+            >&nbsp; {% endif %} {% endfor %} {% if pagination.has_next %}
+            <span class="page-item">
+              <a
+                class="page-link"
+                href="{{ url_for('routes.ManageApps', page=pagination.next_num) }}"
+              >
+                {{ 'Next' }}
+              </a>
+            </span>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Modal Add Mobile Application-->
+
+      <div id="mymodal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">Add Mobile Application</h4>
+            </div>
+            <div class="modal-body">
+              <form
+                action="{{url_for('routes.insert')}}"
+                method="POST"
+                enctype="multipart/form-data"
+              >
+                <div class="form-group">
+                  <label>Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="name"
+                    required="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Logo:</label>
+                  <input
+                    type="file"
+                    class="form-control"
+                    name="logo"
+                    required="1"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Description:</label>
+                  <textarea
+                    class="form-control"
+                    name="description"
+                    rows="5"
+                    col="10"
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <button class="btn btn-primary" type="submit">Add App</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
