@@ -9,7 +9,7 @@ endblock %} {% block body %}
           Manage <b>Mobile Applications </b>
           <button
             type="button"
-            class="btn btn-success float-right"
+            class="btn btn-success float-right btn-create-new"
             data-toggle="modal"
             data-target="#mymodal"
           >
@@ -25,109 +25,112 @@ endblock %} {% block body %}
         </div>
         {% endfor %} {% endif %} {% endwith %}
 
-        <table class="table table-hover table-dark">
-          <thead>
-            <tr>
-              <th>Logo</th>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          {% for row in pagination.items %}
-          <tbody>
-            <tr>
-              <td>
-                <img
-                  src="{{ url_for('static', filename=row.logo_path) }}"
-                  height="40"
-                  width="40"
-                  alt="Logo"
-                  style="border-radius: 5px"
-                />
-              </td>
-              <td>{{row.name}}</td>
-              <td>{{row.description}}</td>
-              <td>
-                <a
-                  href="/update/{{row.id}}"
-                  class="btn btn-warning btn-xs"
-                  data-toggle="modal"
-                  data-target="#modaledit{{row.id}}"
-                  style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
-                >
-                  <i class="fa fa-edit"></i>
-
-                  Edit</a
-                >
-                <a
-                  href="/delete/{{row.id}}"
-                  class="btn btn-danger btn-xs"
-                  onclick="return confirm('Are you sure to delete this app?')"
-                  style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
-                  ><i class="fa fa-trash"></i> Delete</a
-                >
-              </td>
-            </tr>
-
-            <!-- Modal Edit app-->
-            <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h4 class="modal-title">Update Information</h4>
-                  </div>
-
-                  <div class="modal-body">
-                    <form action="{{url_for('routes.update')}}" method="POST">
-                      <div class="form-group">
-                        <label>Name:</label>
-                        <input type="hidden" name="id" value="{{row.id}}" />
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="name"
-                          value="{{row.name}}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label>Description:</label>
-
-                        <textarea
-                          class="form-control"
-                          name="description"
-                          rows="5"
-                        >
-{{row.description}}</textarea
-                        >
-                      </div>
-
-                      <div class="form-group">
-                        <button class="btn btn-primary btn-sm" type="submit">
-                          Update
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-secondary btn-sm"
-                      data-dismiss="modal"
-                    >
-                      Close
-                    </button>
+        <div class="table-responsive mt-3">
+          <table class="table table-hover table-dark">
+            <thead>
+              <tr>
+                <th>Logo</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+  
+            {% for row in pagination.items %}
+            <tbody>
+              <tr>
+                <td>
+                  <img
+                    src="{{ url_for('static', filename=row.logo_path) }}"
+                    height="40"
+                    width="40"
+                    alt="Logo"
+                    style="border-radius: 5px"
+                  />
+                </td>
+                <td>{{row.name}}</td>
+                <td>{{row.description}}</td>
+                <td>
+                  <a
+                    href="/update/{{row.id}}"
+                    class="btn btn-warning btn-xs mb-1"
+                    data-toggle="modal"
+                    data-target="#modaledit{{row.id}}"
+                    style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
+                  >
+                    <i class="fa fa-edit"></i>
+  
+                    Edit</a
+                  >
+                  <a
+                    href="/delete/{{row.id}}"
+                    class="btn btn-danger btn-xs"
+                    onclick="return confirm('Are you sure to delete this app?')"
+                    style="width: 5rem; height: 2.2rem; font-size: 0.7rem"
+                    ><i class="fa fa-trash"></i> Delete</a
+                  >
+                </td>
+              </tr>
+  
+              <!-- Modal Edit app-->
+              <div id="modaledit{{row.id}}" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">Update Information</h4>
+                    </div>
+  
+                    <div class="modal-body">
+                      <form action="{{url_for('routes.update')}}" method="POST">
+                        <div class="form-group">
+                          <label>Name:</label>
+                          <input type="hidden" name="id" value="{{row.id}}" />
+                          <input
+                            type="text"
+                            class="form-control"
+                            name="name"
+                            value="{{row.name}}"
+                          />
+                        </div>
+  
+                        <div class="form-group">
+                          <label>Description:</label>
+  
+                          <textarea
+                            class="form-control"
+                            name="description"
+                            rows="5"
+                          >
+  {{row.description}}</textarea
+                          >
+                        </div>
+  
+                        <div class="form-group">
+                          <button class="btn btn-primary btn-sm" type="submit">
+                            Update
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+  
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {% endfor %}
-          </tbody>
-        </table>
+  
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+       
 
         <div>
           <ul class="pagination">
