@@ -35,6 +35,8 @@
       body {
         font-family: "Montserrat", sans-serif;
       }
+      
+      
 
       .rating {
         display: inline-block;
@@ -101,12 +103,20 @@
         color: #000;
         text-shadow: 0 0 5px #09f;
       }
+      
+      .small-menu {
+          display: none ;
+      }
 
       @media only screen and (max-width: 600px) {
       .btn-create-new {
         width: 100%;
         margin-top: 1rem;
         margin-bottom: 1rem;
+      }
+      
+       .small-menu {
+          display: block;
       }
     }
     </style>
@@ -120,7 +130,7 @@
       <!-- Navbar Brand-->
       <a class="navbar-brand ps-3" href="{{ url_for('routes.Index') }}">Fraud Detector</a>
   
-      <div class="dropdown ml-0" id="sidebarToggle" >
+      <div class="dropdown ml-0 small-menu" id="sidebarToggle" >
         <button style="float:right !important;" class="btn dropdown-toggle text-light" type="button" data-toggle="dropdown">
           <!-- <i class="fas fa-bars"></i> -->View Menu
        </button>
